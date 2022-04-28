@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EntrepriseController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +22,13 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+Route::get('/entreprises',
+    [EntrepriseController::class, 'index']
+)->middleware(['auth'])->name('index');
+
+Route::get('/entreprises/show/{entreprise}',
+    [EntrepriseController::class, 'show']
+)->middleware(['auth'])->name('entreprise.show');
 
 require __DIR__.'/auth.php';

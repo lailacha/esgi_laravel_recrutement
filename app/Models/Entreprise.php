@@ -12,6 +12,7 @@ use App\Models\Pays;
 
 class Entreprise extends Model
 {
+    protected $primaryKey = 'id';
     use HasFactory;
     public function recruteurs()
     {

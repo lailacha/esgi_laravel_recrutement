@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Media;
 use Illuminate\Http\Request;
+use App\Models\Entreprise;
+use Illuminate\Support\Facades\Auth;
 
-class MediaController extends Controller
+class EntrepriseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,10 @@ class MediaController extends Controller
      */
     public function index()
     {
-        //
+        $entreprises = Entreprise::paginate(10);
+
+
+        return view('entreprises/index', ['entreprises' => $entreprises]);
     }
 
     /**
@@ -24,7 +28,7 @@ class MediaController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -41,21 +45,21 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Media  $media
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Media $media)
+    public function show(Entreprise $entreprise)
     {
-        //
+        return view('entreprises/show', ['entreprise' => $entreprise]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Media  $media
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Media $media)
+    public function edit($id)
     {
         //
     }
@@ -64,10 +68,10 @@ class MediaController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Media  $media
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Media $media)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +79,10 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Media  $media
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Media $media)
+    public function destroy($id)
     {
         //
     }
