@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contrat;
 use App\Models\Offre;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OffreController extends Controller
 {
@@ -14,7 +18,8 @@ class OffreController extends Controller
      */
     public function index()
     {
-        //
+        $offres = DB::table('offres')->paginate();
+        return view('offres.index', ['offres' => $offres]);
     }
 
     /**
@@ -24,7 +29,8 @@ class OffreController extends Controller
      */
     public function create()
     {
-        //
+        $type_contrats = Contrat::all();
+        return view('offres.create', ['type_contrats' => $type_contrats]);
     }
 
     /**
@@ -33,9 +39,31 @@ class OffreController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'type_contrat' => 'required',
+            'poste' => 'required|string|max:60',
+            'description' => 'required|string|max:2500',
+            'salaire_min_annuel' => 'lt:salaire_max_annuel|nullable',
+            'salaire_max_annuel' => 'gte:salaire_min_annuel|nullable',
+        ]);
+
+        isset($request->teletravail) ? $request->teletravail = 1 : $request->teletravail = 0;
+        isset($request->lettre_motivation) ? $request->lettre_motivation = 1 : $request->lettre_motivation = 0;
+
+        $offre = Offre::create([
+            'entreprise_id' => $user->entreprise->id,
+            'recruteur_id' => $user->id,
+            'contrat_id' => $request->type_contrat,
+            'poste' => $request->poste,
+            'description' => $request->description,
+            'salaire_min_annuel' => $request->salaire_min_annuel ?? null,
+            'salaire_max_annuel' => $request->salaire_max_annuel ?? null,
+            'lettre_motivation' => $request->lettre_motivation,
+            'teletravail' => $request->teletravail,
+        ]);
+        return redirect()->intended(route('offres.show', [$offre->id]));
     }
 
     /**
@@ -46,7 +74,7 @@ class OffreController extends Controller
      */
     public function show(Offre $offre)
     {
-        //
+        return view('offres.show', ['offre' => $offre]);
     }
 
     /**

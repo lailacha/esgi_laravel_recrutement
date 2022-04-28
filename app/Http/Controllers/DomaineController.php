@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Domaine;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DomaineController extends Controller
 {
@@ -14,7 +15,9 @@ class DomaineController extends Controller
      */
     public function index()
     {
-        //
+        $domaines = DB::table('domaines')->paginate();
+
+        return view('domaines.index', ['domaines' => $domaines]);
     }
 
     /**
@@ -46,7 +49,7 @@ class DomaineController extends Controller
      */
     public function show(Domaine $domaine)
     {
-        //
+        return view('domaines.show', ['domaine' => $domaine]);
     }
 
     /**

@@ -12,6 +12,10 @@ class Offre extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['entreprise_id', 'recruteur_id', 'contrat_id', 'poste',
+        'description', 'salaire_min_annuel',
+        'salaire_max_annuel', 'teletravail', 'lettre_motivation'];
+
     public function recruteur()
     {
         return $this->belongsTo(User::class, 'recruteur_id');
