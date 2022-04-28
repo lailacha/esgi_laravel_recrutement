@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\User;
+use App\Models\Role;
 use App\Providers\RouteServiceProvider;
 use App\Helpers\FileHelper;
 use Illuminate\Auth\Events\Registered;
@@ -38,7 +39,8 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'password_confirmation' => ['required', 'same:password'],
@@ -49,12 +51,13 @@ class RegisteredUserController extends Controller
         $user_id = count(User::all()) + 1;
 
         if($request->hasFile('avatar')) {
+            $avatarName = $user_id."_avatar_".Str::random(20);
 
-            $request->file('avatar')->storeAs('avatar', $request->name . '.' . $request->file('avatar')->getClientOriginalExtension());
+            $request->file('avatar')->storeAs('avatar', $avatarName.'.' . $request->file('avatar')->getClientOriginalExtension(), 'public');
 
             $avatar = Media::create([
-                'chemin' =>  $user_id . '.' . $request->file('avatar')->getClientOriginalExtension(),
-                'nom' =>  $user_id ."_avatar_".Str::random(20),
+                'chemin' =>  $avatarName.'.' . $request->file('avatar')->getClientOriginalExtension(),
+                'nom' =>  $avatarName,
                 "extension" => $request->file('avatar')->getClientOriginalExtension(),
                 'taille_en_ko' => FileHelper::convertByteToKo($request->file('avatar')->getSize()),
                 'created_at' => now(),
@@ -62,22 +65,25 @@ class RegisteredUserController extends Controller
             ]);
         }
 
+
         if($request->hasFile('cv')) {
 
-        $request->file('cv')->storeAs('cv', $request->name . '.' . $request->file('cv')->getClientOriginalExtension());
+            $cvName = $user_id."_cv_".Str::random(20);
+            $request->file('cv')->storeAs('cv', $cvName.'.' . $request->file('cv')->getClientOriginalExtension(), 'public');
+
             $cv = Media::create([
-                'chemin' =>  $user_id . '.' . $request->file('cv')->getClientOriginalExtension(),
-                'nom' =>  $user_id."_cv_".Str::random(20),
+                'chemin' =>  $cvName. '.' . $request->file('cv')->getClientOriginalExtension(),
+                'nom' =>  $cvName,
                 "extension" => $request->file('cv')->getClientOriginalExtension(),
                 'taille_en_ko' => FileHelper::convertByteToKo($request->file('cv')->getSize()),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-
         }
 
         $user = User::create([
-            'name' => $request->name,
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'avatar_id' => $avatar->id ?? null,
@@ -90,4 +96,23 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
+
+    public function index()
+    {
+        $users = User::paginate(10);
+
+        return view('users.index', compact('users'));
+    }
+
+    public function show(User $user)
+    {
+        return view('users.show', compact('user'));
+    }
+
+    public function downloadCV(User $user)
+    {
+        return response()->download(storage_path('app/public/cv/'.$user->cv->chemin), $user->cv->nom);
+    }
+
+
 }
