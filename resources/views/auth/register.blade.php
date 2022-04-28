@@ -9,7 +9,7 @@
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
             @csrf
 
             <!-- Name -->
@@ -26,7 +26,8 @@
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
             </div>
 
-            <!-- Password -->
+
+                <!-- Password -->
             <div class="mt-4">
                 <x-label for="password" :value="__('Password')" />
 
@@ -45,6 +46,21 @@
                                 name="password_confirmation" required />
             </div>
 
+
+            <!-- Avatar -->
+            <div>
+                <x-label for="avatar" :value="__('Avatar')" />
+
+                <x-input id="avatar" class="block mt-1 w-full" type="file" name="avatar" />
+            </div>
+
+
+                <!-- CV -->
+                <div>
+                    <x-label for="cv" :value="__('Cv')" />
+
+                    <x-input id="cv" class="block mt-1 w-full" type="file" name="cv" />
+                </div>
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
                     {{ __('Already registered?') }}
