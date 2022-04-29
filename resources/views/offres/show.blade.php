@@ -25,9 +25,11 @@
                     </div>
                     <br>
                     <div>
-                        <p>
-                            <a href="#" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
-                        </p>
+                        @if(Auth::user()->isCandidat())
+                            <p>
+                                <a href="#" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>

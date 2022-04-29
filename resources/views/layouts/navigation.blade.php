@@ -67,6 +67,7 @@
                                                 this.closest('form').submit();">
                                 {{ __('Créer une entreprise') }}
                             </x-dropdown-link>
+                        </form>
                         @endif
 
                         <!-- Authentication -->
