@@ -2,22 +2,32 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Models\Media;
 use App\Models\User;
-use App\Models\Role;
-use App\Providers\RouteServiceProvider;
+use App\Models\Media;
 use App\Helpers\FileHelper;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Services\UserService;
+use App\Services\MediaService;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
+use App\Providers\RouteServiceProvider;
+use App\Http\Requests\UserProfileRequest;
 
 class RegisteredUserController extends Controller
 {
+    private MediaService $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
+
     /**
      * Display the registration view.
      *
@@ -45,40 +55,16 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'password_confirmation' => ['required', 'same:password'],
             'cv' => 'file|mimes:pdf',
+            'role' => 'required',
             'avatar' => 'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $user_id = count(User::all()) + 1;
-
         if($request->hasFile('avatar')) {
-            $avatarName = $user_id."_avatar_".Str::random(20);
-
-            $request->file('avatar')->storeAs('avatar', $avatarName.'.' . $request->file('avatar')->getClientOriginalExtension(), 'public');
-
-            $avatar = Media::create([
-                'chemin' =>  $avatarName.'.' . $request->file('avatar')->getClientOriginalExtension(),
-                'nom' =>  $avatarName,
-                "extension" => $request->file('avatar')->getClientOriginalExtension(),
-                'taille_en_ko' => FileHelper::convertByteToKo($request->file('avatar')->getSize()),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+           $avatar = $this->mediaService->saveRessourceGetInstance($request, 'avatar', 'avatar');
         }
 
-
         if($request->hasFile('cv')) {
-
-            $cvName = $user_id."_cv_".Str::random(20);
-            $request->file('cv')->storeAs('cv', $cvName.'.' . $request->file('cv')->getClientOriginalExtension(), 'public');
-
-            $cv = Media::create([
-                'chemin' =>  $cvName. '.' . $request->file('cv')->getClientOriginalExtension(),
-                'nom' =>  $cvName,
-                "extension" => $request->file('cv')->getClientOriginalExtension(),
-                'taille_en_ko' => FileHelper::convertByteToKo($request->file('cv')->getSize()),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $cv = $this->mediaService->saveRessourceGetInstance($request, 'cv', 'cv');
         }
 
         $user = User::create([
@@ -89,6 +75,8 @@ class RegisteredUserController extends Controller
             'avatar_id' => $avatar->id ?? null,
             'cv_id' => $cv->id ?? null,
         ]);
+
+        $user->assignRole($request->role);
 
         event(new Registered($user));
 
@@ -112,6 +100,46 @@ class RegisteredUserController extends Controller
     public function downloadCV(User $user)
     {
         return response()->download(storage_path('app/public/cv/'.$user->cv->chemin), $user->cv->nom);
+    }
+
+    public function edit(User $user)
+    {
+        $roles = Role::all();
+
+        return view('users.edit', compact('roles', 'user'));
+    }
+
+    public function update(User $user, UserProfileRequest $request)
+    {
+
+        if($request->hasFile('avatar')) {
+           $avatar = $this->mediaService->saveRessourceGetInstance($request,'avatar','avatar');
+
+           $user->avatar_id = $avatar->id;
+        }
+
+        if ($request->hasFile('cv')) {
+            $cv = $this->mediaService->saveRessourceGetInstance($request,'cv', 'cv');
+            $user->cv_id = $cv->id;
+        }
+
+        if($request->has('firstname')) {
+            $user->firstname = $request->firstname;
+        }
+
+        if($request->has('lastname')) {
+            $user->lastname = $request->lastname;
+        }
+
+        if($request->has('role') && Auth::user()->hasRole('admin')) {
+            $user->assignRole($request->role);
+        }
+
+        $user->update();
+
+        return redirect()->back()->withSuccess('Modification validée!');
+
+
     }
 
 

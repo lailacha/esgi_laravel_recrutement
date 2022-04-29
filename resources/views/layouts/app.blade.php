@@ -21,14 +21,30 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
 
             <!-- Page Content -->
             <main>
+                @if(session('success'))
+                <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3" role="alert">
+                    <p class="font-bold">{{session('success')}}</p>
+                  </div>
+            @endif
+
+            @if(session('error'))
+            <div class="bg-red-900 border-t border-b border-blue-500 text-white px-4 py-3" role="alert">
+                <p class="font-bold">{{session('error')}}</p>
+              </div>
+        @endif
+
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
                 {{ $slot }}
             </main>
         </div>

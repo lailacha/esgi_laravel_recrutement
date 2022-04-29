@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-indigo-600  leading-tight">
             Les offres disponibles
         </h2>
     </x-slot>
@@ -25,9 +25,11 @@
                     </div>
                     <br>
                     <div>
-                        <p>
-                            <a href="#" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
-                        </p>
+                        @if(Auth::user()->isCandidat())
+                            <p>
+                                <a href="#" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>
