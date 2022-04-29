@@ -38,7 +38,7 @@ class EntrepriseRequest extends FormRequest
             'code_postal' => 'required|string|max:32',
             'mail' => 'required|string|email|max:320',
             'description' => 'required|string|max:300',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

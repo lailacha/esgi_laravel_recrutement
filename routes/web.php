@@ -68,6 +68,14 @@ Route::middleware(['auth'])->group(function () {
         [OffreController::class, 'store'],
     )->name('offres.store');
 
+    Route::get('/offres/entreprise/{entreprise}',
+    [OffreController::class, 'showByEntreprise'],
+    )->name('offres.showByEntreprise');
+
+    Route::post('offres/delete/{offre}',
+        [OffreController::class, 'destroy'],
+    )->name('offres.delete');
+
     // domaines
 
     Route::get('/domaines',

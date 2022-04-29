@@ -61,12 +61,28 @@
                         </x-dropdown-link>
                     </form>
 
+                     <!-- Offres -->
+                    <form method="GET" action="{{ route('offres.create') }}">
+                        <x-dropdown-link :href="route('offres.create')" onclick="event.preventDefault();
+                                            this.closest('form').submit();">
+                            {{ __('Publier une offre') }}
+                        </x-dropdown-link>
+                    </form>
+
+                    <form method="GET" action="{{ route('offres.showByEntreprise', Auth::user()->entreprise) }}">
+                        <x-dropdown-link :href="route('offres.showByEntreprise', Auth::user()->entreprise)" onclick="event.preventDefault();
+                                            this.closest('form').submit();">
+                            {{ __('Voir nos offres') }}
+                        </x-dropdown-link>
+                    </form>
+
                         @elseif (Auth::user()->hasRole('recruteur'))
                         <form method="GET" action="{{ route('entreprises.create') }}">
                             <x-dropdown-link :href="route('entreprises.create')" onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Créer une entreprise') }}
                             </x-dropdown-link>
+                        </form>
                         @endif
 
                         <!-- Authentication -->

@@ -10,7 +10,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex">
                 <div class="p-6 w-3/6 bg-white border-b border-gray-200">
                    <p style="font-size: 2rem;">Détails de l'entreprise :</p>
+                  @if(isset($entreprise->logo))
                    <img class="w-1/6 m-4" src="{{ asset('storage/entreprises_logo/'.$entreprise->logo->chemin) }}" alt="">
+                    @else
+                    <img class="w-1/6 m-4" src="{{ asset('storage/entreprises_logo/default_logo.png') }}" alt="">
+                    @endif
                    <br>
 
                 <ul>
