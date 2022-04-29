@@ -2,12 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Pays;
+use App\Models\Domaine;
 use App\Models\Entreprise;
+use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use App\Services\MediaService;
+use App\Services\EntrepriseService;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\EntrepriseRequest;
 
 class EntrepriseController extends Controller
 {
+
+
+    private $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +44,7 @@ class EntrepriseController extends Controller
      */
     public function create()
     {
-        
+        return view('entreprises/create', ['domaines' => Domaine::all(), 'pays' => Pays::all()]);
     }
 
     /**
@@ -37,9 +53,19 @@ class EntrepriseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EntrepriseRequest $request)
     {
-        //
+
+        $logo = $this->mediaService->saveRessourceGetInstance($request,'logo','logo');
+
+        $data =  array_merge(Arr::except($request->validated(), ['logo']), ['media_id' => $logo->id]);
+
+        $entreprise = Entreprise::create($data);
+
+        Auth::user()->entreprise_id = $entreprise->id;
+        Auth::user()->save();
+
+        return redirect()->route('entreprises.show', $entreprise);
     }
 
     /**
@@ -51,6 +77,30 @@ class EntrepriseController extends Controller
     public function show(Entreprise $entreprise)
     {
         return view('entreprises/show', ['entreprise' => $entreprise]);
+    }
+
+    public function assignForm(Entreprise $entreprise)
+    {
+        return view('entreprises.assign', ['entreprise' => $entreprise]);
+    }
+
+    public function assignUser(Request $request)
+    {
+        $user = User::where('email', $request->mail)->get()->first();
+
+        if(!$user) {
+            return redirect()->back()->with('error', 'Cet utilisateur n\'existe pas');
+        }
+
+        if($user->entreprise_id != null) {
+            return redirect()->back()->with('error', 'Cet utilisateur est déjà affecté à une entreprise');
+        }
+
+        $user->entreprise_id = $request->entreprise_id;
+        $user->save();
+
+        return redirect()->route('entreprises.show', ['entreprise' => $user->entreprise_id])->with('success', 'Utilisateur assigné');
+
     }
 
     /**
