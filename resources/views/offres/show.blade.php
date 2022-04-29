@@ -21,13 +21,13 @@
                     <div>
                         <p><a href="{{ route('entreprises.show', $offre->entreprise) }}">{{ $offre->entreprise->nom }}</a></p> <!-- ajouter la route entreprises.show !-->
                         <p style="display: inline;">Son domaine : {{ $offre->entreprise->domaine->titre }}</p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="display: inline; font-style: italic; color: grey;">
-                            <a href="#">Voir d'autres entreprises dans ce domaine</a></p>
+                            <a href="{{ route('domaines.show', $offre->entreprise->domaine) }}">Voir d'autres entreprises dans ce domaine</a></p>
                     </div>
                     <br>
                     <div>
                         @if(Auth::user()->isCandidat())
                             <p>
-                                <a href="#" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
+                                <a href="{{ route('candidatures.create', $offre) }}" style="color:grey;font-style: italic;border: 0.2rem solid">Postuler</a>
                             </p>
                         @endif
                     </div>

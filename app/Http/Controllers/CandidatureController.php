@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidature;
+use App\Models\Offre;
 use Illuminate\Http\Request;
+use App\Services\MediaService;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\MediaController;
 
 class CandidatureController extends Controller
 {
+    private MediaService $mediaService;
+
+    public function __construct(MediaService $mediaService)
+    {
+        $this->mediaService = $mediaService;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -22,9 +32,9 @@ class CandidatureController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Offre $offre)
     {
-        //
+        return view('candidatures.create', ['offre' => $offre]);
     }
 
     /**
@@ -33,9 +43,32 @@ class CandidatureController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Offre $offre)
     {
-        //
+        $request->validate([
+            'cv_insert' => 'file|mimes:pdf',
+            'lettre_motivation_insert' => 'file|mimes:pdf',
+        ]);
+
+        $user = Auth::user();
+
+        if($request->hasFile('lettre_motivation_insert')) {
+            $lettre_motivation = $this->mediaService->saveRessourceGetInstance($request, 'lettre_motivation', 'lettre_motivation');
+        }
+
+        if($request->hasFile('cv_insert')) {
+            $cv = $this->mediaService->saveRessourceGetInstance($request, 'cv_insert', 'cv');
+        }else{
+            $cv_id = $user->cv_id;
+        }
+        $candidature = Candidature::create([
+            'candidat_id' => $user->id,
+            'offre_id' => $offre->id,
+            'lettre_motivation_id' => $lettre_motivation->id ?? null,
+            'cv_id' => $cv->id ?? $cv_id,
+        ]);
+
+        return redirect()->intended(route('candidatures.show', [$candidature->id]));
     }
 
     /**
@@ -46,7 +79,7 @@ class CandidatureController extends Controller
      */
     public function show(Candidature $candidature)
     {
-        //
+        return view('candidatures.show', ['candidature' => $candidature]);
     }
 
     /**
@@ -81,5 +114,15 @@ class CandidatureController extends Controller
     public function destroy(Candidature $candidature)
     {
         //
+    }
+
+    public function downloadCV(Candidature $candidature)
+    {
+        return MediaController::downloadMedia($candidature->cv_id, 'cv');
+    }
+
+    public function downloadLM(Candidature $candidature)
+    {
+        return MediaController::downloadMedia($candidature->cv_id, 'lettre_motivation');
     }
 }

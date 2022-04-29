@@ -90,6 +90,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isCandidat()
     {
-        return $this->hasRole('user');
+        return $this->hasRole('candidat');
     }
 }
