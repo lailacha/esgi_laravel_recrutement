@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Entreprise;
 use App\Models\Contrat;
+use App\Models\Candidature;
 
 class Offre extends Model
 {
@@ -27,5 +28,9 @@ class Offre extends Model
     public function contrat()
     {
         return $this->belongsTo(Contrat::class);
+    }
+    public function candidatures()
+    {
+        return $this->hasMany(Candidature::class);
     }
 }
