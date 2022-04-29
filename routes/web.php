@@ -30,13 +30,16 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::group(['middleware' => ['role:candidat']], function () {
         Route::get('/candidatures/create/{offre}',
             [CandidatureController::class, 'create']
-        )->name('candidatures.create');
+        )->middleware('can_create_candidature')->name('candidatures.create');
         Route::post('/candidatures/store/{offre}',
             [CandidatureController::class, 'store']
         )->name('candidatures.store');
         Route::get('/candidatures/show/{candidature}',
             [CandidatureController::class, 'show']
         )->name('candidatures.show');
+        Route::get('/candidatures/showCandidatures/',
+            [CandidatureController::class, 'showCandidatures']
+        )->name('candidatures.showCandidaturesUser');
     });
     Route::group(['middleware' => ['role:recruteur']], function () {
         Route::get('/entreprises/create',

@@ -83,6 +83,18 @@ class CandidatureController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Offre  $offre
+     * @return \Illuminate\Http\Response
+     */
+    public function showCandidatures()
+    {
+        $candidatures = Auth::user()->candidatures;
+        return view('candidatures.showCandidatures', ['candidatures' => $candidatures]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Candidature  $candidature
