@@ -56,7 +56,9 @@ class EntrepriseController extends Controller
     public function store(EntrepriseRequest $request)
     {
 
-        $logo = $this->mediaService->saveRessourceGetInstance($request,'logo','logo');
+        if($request->hasFile('logo')){
+            $logo = $this->mediaService->saveRessourceGetInstance($request,'logo','logo');
+        }
 
         $data =  array_merge(Arr::except($request->validated(), ['logo']), ['media_id' => $logo->id]);
 
@@ -89,7 +91,7 @@ class EntrepriseController extends Controller
         $user = User::where('email', $request->mail)->get()->first();
 
         if(!$user) {
-            return redirect()->back()->with('error', 'Cet utilisateur n\'existe pas');
+            return redirect()->back()->with('error', 'Ajout impossible');
         }
 
         if($user->entreprise_id != null) {

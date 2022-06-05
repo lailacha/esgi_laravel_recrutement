@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidature;
-use App\Models\Contrat;
-use App\Models\Offre;
 use App\Models\User;
+use App\Models\Offre;
+use App\Models\Contrat;
+use App\Models\Entreprise;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class OffreController extends Controller
 {
@@ -78,6 +79,13 @@ class OffreController extends Controller
         return view('offres.show', ['offre' => $offre]);
     }
 
+    public function showByEntreprise(Entreprise $entreprise)
+    {
+        $offres = Offre::where('entreprise_id', $entreprise->id)->paginate(10);
+
+        return view('offres.index', ['offres' => $offres]);
+    }
+
     /**
      * Display the specified resource.
      *
@@ -116,7 +124,7 @@ class OffreController extends Controller
         //
     }
 
-    /**
+    /** TODO: add permission
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Offre  $offre
@@ -124,6 +132,8 @@ class OffreController extends Controller
      */
     public function destroy(Offre $offre)
     {
-        //
+        Offre::destroy($offre->id);
+
+        return redirect()->route('offres.showByEntreprise', $offre->entreprise->id);
     }
 }

@@ -96,6 +96,22 @@ Route::middleware(['auth','verified'])->group(function () {
         [OffreController::class, 'show'],
     )->name('offres.show');
 
+    Route::get('/offres/create/',
+        [OffreController::class, 'create'],
+    )->name('offres.create');
+
+    Route::post('/offres/store/{user}',
+        [OffreController::class, 'store'],
+    )->name('offres.store');
+
+    Route::get('/offres/entreprise/{entreprise}',
+    [OffreController::class, 'showByEntreprise'],
+    )->name('offres.showByEntreprise');
+
+    Route::post('offres/delete/{offre}',
+        [OffreController::class, 'destroy'],
+    )->name('offres.delete');
+
     // domaines
 
     Route::get('/domaines',
