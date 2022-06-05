@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidature;
 use App\Models\User;
 use App\Models\Offre;
 use App\Models\Contrat;
@@ -83,6 +84,21 @@ class OffreController extends Controller
         $offres = Offre::where('entreprise_id', $entreprise->id)->paginate(10);
 
         return view('offres.index', ['offres' => $offres]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Offre  $offre
+     * @return \Illuminate\Http\Response
+     */
+    public function showCandidatures(Offre $offre)
+    {
+       /* $candidatures = DB::table('candidatures')
+            ->where('offre_id', '=', $offre->id)
+            ->paginate();*/
+        $candidatures = Candidature::all();
+        return view('offres.showCandidatures', ['candidatures' => $candidatures, 'offre' => $offre]);
     }
 
     /**

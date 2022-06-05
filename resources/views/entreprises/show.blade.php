@@ -37,25 +37,25 @@
 
                 </div>
                 <div class="p-6 bg-white border-b border-gray-200">
-                    @if(Auth::user()->entreprise->id == $entreprise->id)
-                    <h1>Membres:</h1>
-                    <ul>
-                    @foreach ($entreprise->recruteurs as $recruteur )
+                    @if(isset(Auth::user()->entreprise->id))
+                        @if(Auth::user()->entreprise->id == $entreprise->id)
+                            <h1>Membres:</h1>
+                            <ul>
+                                @foreach ($entreprise->recruteurs as $recruteur )
+                                    <li>{{$recruteur->fullName()}}</li>
+                                @endforeach
+                            </ul>
 
-                    <li>{{$recruteur->fullName()}}</li>
-                    @endforeach
-                    </ul>
-
-                    <div class="flex items-center justify-end mt-4">
-                    <a href="{{route('entreprises.assign.form', $entreprise->id)}}">
-                        <button class="ml-4 bg-indigo-600 p-3 rounded text-white">
-                           Ajouter des coéquipiers
-                        </button>
-                    </a>
-                    </div>
+                            <div class="flex items-center justify-end mt-4">
+                                <a href="{{route('entreprises.assign.form', $entreprise->id)}}">
+                                    <button class="ml-4 bg-indigo-600 p-3 rounded text-white">
+                                       Ajouter des coéquipiers
+                                    </button>
+                                </a>
+                            </div>
+                        @endif
+                    @endif
                 </div>
-                @endif
-
             </div>
         </div>
     </div>

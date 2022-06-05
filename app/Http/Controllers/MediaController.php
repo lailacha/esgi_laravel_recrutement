@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
+
+    static function downloadMedia($id, $media_type)
+    {
+        $media = Media::findOrFail($id);
+        return response()->download(storage_path('app/public/'.$media_type.'/'.$media->chemin), $media->nom);
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Entreprise;
 use App\Models\Offre;
+use App\Models\Candidature;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -62,6 +63,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Offre::class);
     }
 
+    public function candidatures()
+    {
+        return $this->hasMany(Candidature::class, 'candidat_id');
+    }
 
     public function avatar()
     {
@@ -90,6 +95,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isCandidat()
     {
-        return $this->hasRole('user');
+        return $this->hasRole('candidat');
     }
 }
